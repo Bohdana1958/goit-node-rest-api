@@ -37,7 +37,7 @@ export const deleteContact = async (req, res, next) => {
   const { id } = req.params;
   try {
     const deletedContact = await removeContact(id);
-    if (!deleteContact) {
+    if (!deletedContact) {
       return next(HttpError(404, "Not found"));
     }
     res.status(200).json(deletedContact);
@@ -48,11 +48,6 @@ export const deleteContact = async (req, res, next) => {
 
 export const createContact = async (req, res, next) => {
   const { name, email, phone } = req.body;
-
-  if (!name || !email || !phone) {
-    return next(HttpError(400, "Name, email, and phone are required"));
-  }
-
   try {
     const { error } = createContactSchema.validate({ name, email, phone });
     if (error) {
@@ -69,15 +64,34 @@ export const createContact = async (req, res, next) => {
 export const updateContact = async (req, res, next) => {
   const { id } = req.params;
   const { name, email, phone } = req.body;
+
+  if (!name && !email && !phone) {
+    return res
+      .status(400)
+      .json({ message: "Body must have at least one field" });
+  }
+
   try {
     const { error } = updateContactSchema.validate({ name, email, phone });
     if (error) {
       return next(HttpError(400, error.message));
     }
-    const updatedContact = await updateContactById(id, { name, email, phone });
-    if (!updatedContact) {
+
+    const existingContact = await getContactById(id);
+    if (!existingContact) {
       return next(HttpError(404, "Contact not found"));
     }
+
+    const updatedName = name || existingContact.name;
+    const updatedEmail = email || existingContact.email;
+    const updatedPhone = phone || existingContact.phone;
+
+    const updatedContact = await updateContactById(id, {
+      name: updatedName,
+      email: updatedEmail,
+      phone: updatedPhone,
+    });
+
     res.status(200).json(updatedContact);
   } catch (error) {
     next(HttpError(500, "Internal Server Error"));
