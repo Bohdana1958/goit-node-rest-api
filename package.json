@@ -7,11 +7,20 @@
   },
   "dependencies": {
     "cors": "^2.8.5",
-    "express": "^4.18.2",
+    "express": "^4.19.2",
     "joi": "^17.11.0",
-    "morgan": "^1.10.0"
+    "morgan": "^1.10.0",
+    "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.0.2"
+    "husky": "^4.3.8",
+    "lint-staged": "^13.1.2",
+    "nodemon": "^3.1.0"
+  },
+  
+  "husky": {
+    "hooks": {
+      "pre-commit": "echo \"No linting configured\""
+    }
   }
 }
