@@ -28,10 +28,14 @@ async function updateContactById(contactId, updateData) {
   );
   return updatedContact;
 }
-async function updateStatusContact(contactId, body) {
-  const updatedContact = await Contact.findByIdAndUpdate(contactId, body, {
-    new: true,
-  });
+async function updateStatusContact(contactId, updateData) {
+  const updatedContact = await Contact.findByIdAndUpdate(
+    contactId,
+    updateData,
+    {
+      new: true,
+    }
+  );
   return updatedContact;
 }
 

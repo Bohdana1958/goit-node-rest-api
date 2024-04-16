@@ -13,10 +13,10 @@ const app = express();
 mongoose
   .connect(process.env.MONGODB_URL)
   .then(() => {
-    console.log("Mongo DB connected...");
+    console.log("Database connection successful");
   })
-  .catch((err) => {
-    console.log(err);
+  .catch((error) => {
+    console.error("Database connection error:", error);
     process.exit(1);
   });
 

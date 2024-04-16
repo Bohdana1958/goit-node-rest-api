@@ -4,6 +4,7 @@ import {
   removeContact,
   addContact,
   updateContactById,
+  updateStatusContact,
 } from "../services/contactsServices.js";
 import {
   createContactSchema,
@@ -41,11 +42,11 @@ export const createContact = catchAsync(async (req, res, next) => {
   if (error) {
     return next(HttpError(400, error.message));
   }
-  const newContact = await addContact(name, email, phone);
+  const newContact = await addContact({ name, email, phone });
   res.status(201).json(newContact);
 });
 
-export const updateContact = catchAsync(async (req, res, next) => {
+export const updateContact = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { name, email, phone } = req.body;
   if (!name && !email && !phone) {
@@ -53,21 +54,24 @@ export const updateContact = catchAsync(async (req, res, next) => {
       .status(400)
       .json({ message: "Body must have at least one field" });
   }
-  const { error } = updateContactSchema.validate({ name, email, phone });
-  if (error) {
-    return next(HttpError(400, error.message));
+
+  const updatedContact = await updateContactById(id, req.body);
+  if (!updatedContact) {
+    throw HttpError(404, "Contact not found");
   }
-  const existingContact = await getContactById(id);
-  if (!existingContact) {
-    return next(HttpError(404, "Contact not found"));
+
+  res.status(200).json(updatedContact);
+});
+
+export const updateStatus = catchAsync(async (req, res, next) => {
+  const { contactId } = req.params;
+  const { favorite } = req.body;
+
+  const updatedContact = await updateStatusContact(contactId, { favorite });
+
+  if (!updatedContact) {
+    return res.status(404).json({ message: "Not found" });
   }
-  const updatedName = name || existingContact.name;
-  const updatedEmail = email || existingContact.email;
-  const updatedPhone = phone || existingContact.phone;
-  const updatedContact = await updateContactById(id, {
-    name: updatedName,
-    email: updatedEmail,
-    phone: updatedPhone,
-  });
+
   res.status(200).json(updatedContact);
 });
