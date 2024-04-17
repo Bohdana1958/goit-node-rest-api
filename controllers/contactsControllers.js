@@ -64,10 +64,10 @@ export const updateContact = catchAsync(async (req, res) => {
 });
 
 export const updateStatus = catchAsync(async (req, res, next) => {
-  const { contactId } = req.params;
+  const { id } = req.params;
   const { favorite } = req.body;
 
-  const updatedContact = await updateStatusContact(contactId, { favorite });
+  const updatedContact = await updateStatusContact(id, { favorite });
 
   if (!updatedContact) {
     return res.status(404).json({ message: "Not found" });
