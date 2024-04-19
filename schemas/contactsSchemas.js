@@ -14,17 +14,14 @@ export const createContactSchema = Joi.object({
 
   email: Joi.string().email().required(),
   phone: Joi.string().required(),
-
 });
 
 export const updateContactSchema = Joi.object({
   name: Joi.string(),
-  email: Joi.string().email(),
+  email: Joi.string(),
   phone: Joi.string(),
-}).min(1);
-
+});
 
 export const updateStatusSchema = Joi.object({
   favorite: Joi.boolean().required(),
 });
-

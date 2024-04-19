@@ -1,5 +1,6 @@
 import { model, Schema } from "mongoose";
 import { handleError } from "../helpers/handleError.js";
+import bcrypt from "bcrypt";
 
 const userSchema = new Schema(
   {
@@ -26,5 +27,7 @@ const userSchema = new Schema(
 );
 
 userSchema.post("save", handleError);
+userSchema.methods.checkUserPassword = (candidate, passwordHash) =>
+  bcrypt.compare(candidate, passwordHash);
 
 export const User = model("user", userSchema);
