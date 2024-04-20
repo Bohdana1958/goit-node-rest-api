@@ -14,19 +14,26 @@ import {
   updateStatusSchema,
 } from "../schemas/contactsSchemas.js";
 import { validateBody } from "../helpers/validateBody.js";
+import { protect } from "../middelwares/authMiddelwares.js";
 
 const contactsRouter = express.Router();
 
-contactsRouter.get("/", getAllContacts);
+contactsRouter.get("/", protect, getAllContacts);
 
-contactsRouter.get("/:id", isValidId, getOneContact);
+contactsRouter.get("/:id", protect, isValidId, getOneContact);
 
-contactsRouter.delete("/:id", isValidId, deleteContact);
+contactsRouter.delete("/:id", protect, isValidId, deleteContact);
 
-contactsRouter.post("/", validateBody(createContactSchema), createContact);
+contactsRouter.post(
+  "/",
+  protect,
+  validateBody(createContactSchema),
+  createContact
+);
 
 contactsRouter.put(
   "/:id",
+  protect,
   isValidId,
   validateBody(updateContactSchema),
   updateContact
@@ -34,6 +41,7 @@ contactsRouter.put(
 
 contactsRouter.patch(
   "/:id/favorite",
+  protect,
   isValidId,
   validateBody(updateStatusSchema),
   updateStatus

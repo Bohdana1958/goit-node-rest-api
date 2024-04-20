@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 
 import contactsRouter from "./routes/contactsRouter.js";
 import authRouter from "./routes/authRouter.js";
+import { globalErrorHandler } from "./controllers/errorController.js";
 
 dotenv.config();
 
@@ -36,6 +37,8 @@ app.use((err, req, res, next) => {
   const { status = 500, message = "Server error" } = err;
   res.status(status).json({ message });
 });
+
+app.use(globalErrorHandler);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

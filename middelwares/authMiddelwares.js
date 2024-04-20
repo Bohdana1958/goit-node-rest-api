@@ -4,39 +4,55 @@ import {
   loginUserDataValidator,
   registerUserDataValidator,
 } from "../helpers/userValidator.js";
-import { checkUserExistsService } from "../services/usersService.js";
+import { checkToken } from "../services/jwtService.js";
+import {
+  checkUserExistsService,
+  getUserByIdService,
+} from "../services/usersService.js";
 
 export const checkRegisterData = catchAsync(async (req, res, next) => {
-  const { value, error } = registerUserDataValidator(req.body);
-  if (error) throw new HttpError(400, "Invalid user data", error);
+  const { email, password } = req.body;
+
+  const { value, error } = registerUserDataValidator({
+    email,
+    password,
+  });
+
+  if (error) {
+    console.error("Validation error:", error);
+    throw HttpError(400, "Bad Request", error);
+  }
+
   const userExist = await checkUserExistsService({ email: value.email });
-  if (userExist) throw new HttpError(409, "Email in use");
+
+  if (userExist) {
+    throw HttpError(409, "Email in use");
+  }
+
   req.body = value;
   next();
 });
 
 export const checkLoginData = (req, res, next) => {
   const { value, error } = loginUserDataValidator(req.body);
-  if (error) throw new HttpError(401, "Unauthorized", error);
+  if (error) throw new HttpError(400, "Bad request", error);
   req.body = value;
   next();
 };
 
-export const authorizate = async (req, res, next) => {
-  const { authorization = "" } = req.headers;
-  const [bearer, token] = authorization.split(" ");
-  if (bearer !== "Bearer") {
-    next(HttpError(401, "Not authorized"));
-  }
-  //checkToken, findUserById
-  const id = checkToken(token);
-  const user = await findUserById(id);
+export const protect = catchAsync(async (req, res, next) => {
+  const token =
+    req.headers.authorization?.startsWith("Bearer") &&
+    req.headers.authorization.split(" ")[1];
+  const userId = checkToken(token);
 
-  if (!user || !user.token || user.token !== token) {
-    next(HttpError(401, "Not authorized"));
-  }
+  if (!userId) throw HttpError(401, "Not authorized");
 
-  req.user = user;
+  const currentUser = await getUserByIdService(userId);
+
+  if (!currentUser) throw HttpError(401, "Not authorized");
+
+  req.user = currentUser;
 
   next();
-};
+});

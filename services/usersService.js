@@ -8,6 +8,11 @@ export const checkUserExistsService = (filter) => User.exists(filter);
 export const registerUser = async (userData) => {
   const { email, password } = userData;
 
+  const existingUser = await User.findOne({ email });
+  if (existingUser) {
+    throw HttpError(409, "Email in use");
+  }
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const newUser = await User.create({ email, password: hashedPassword });
@@ -18,21 +23,15 @@ export const registerUser = async (userData) => {
 };
 
 export const loginUser = async ({ email, password }) => {
-  console.log("Attempting login with:", email, password);
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
-    console.log("User not found");
     throw HttpError(401, "Unauthorized");
   }
 
-  console.log("User password from database:", user.password);
-  console.log("User input password:", password);
-  // const isPasswordValid = await user.checkUserPassword(password, user.password);
-  const isPasswordValid = await bcrypt.compare(password, user.password);
+  const isPasswordValid = await user.checkUserPassword(password, user.password);
 
   if (!isPasswordValid) {
-    console.log("Invalid password");
     throw HttpError(401, "Unauthorized");
   }
 
@@ -41,3 +40,16 @@ export const loginUser = async ({ email, password }) => {
 
   return { user, token };
 };
+
+export async function listUsers() {
+  const user = await User.find();
+  return user;
+}
+
+export const getUserByIdService = (id) => User.findById(id);
+
+export async function deleteToken(id) {
+  const result = await User.findByIdAndUpdate(id, { token: "" });
+  console.log(id);
+  return result;
+}
