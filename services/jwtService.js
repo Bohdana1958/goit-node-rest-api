@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import HttpError from "../helpers/HttpError.js";
+import { HttpError } from "../helpers/HttpError.js";
 import dotenv from "dotenv";
 
 dotenv.config();
@@ -10,12 +10,12 @@ export const signToken = (id) =>
   });
 
 export const checkToken = (token) => {
-  if (!token) throw new HttpError(401, "Unauthorized");
+  if (!token) throw HttpError(401, "Unauthorized");
 
   try {
     const { id } = jwt.verify(token, process.env.JWT_SECRET);
     return id;
   } catch (error) {
-    throw new HttpError(401, "Unauthorized");
+    throw HttpError(401, "Unauthorized");
   }
 };
