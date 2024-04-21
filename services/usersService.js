@@ -26,13 +26,13 @@ export const loginUser = async ({ email, password }) => {
   const user = await User.findOne({ email }).select("+password");
 
   if (!user) {
-    throw HttpError(401, "Unauthorized");
+    throw HttpError(401, "Email or password is wrong");
   }
 
   const isPasswordValid = await user.checkUserPassword(password, user.password);
 
   if (!isPasswordValid) {
-    throw HttpError(401, "Unauthorized");
+    throw HttpError(401, "Email or password is wrong");
   }
 
   user.password = undefined;

@@ -12,19 +12,21 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 });
 
 export const register = catchAsync(async (req, res) => {
-  const { newUser, token } = await registerUser({ ...req.body });
+  const { newUser } = await registerUser({ ...req.body });
   const { email, subscription } = newUser;
   res.status(201).json({
     newUser: {
       email: email,
       subscription: subscription,
     },
-    token,
   });
 });
 
 export const login = catchAsync(async (req, res) => {
   const { user, token } = await loginUser({ ...req.body });
+  console.log("User:", user);
+  console.log("Token:", token);
+
   const { email, subscription } = user;
   res.status(200).json({
     user: {
