@@ -23,7 +23,7 @@ const contactSchema = new Schema(
     },
   },
   {
-    versionKey: false, // Правильне розміщення опції versionKey
+    versionKey: false,
   }
 );
 

@@ -1,36 +1,45 @@
 import { Contact } from "../models/contactModel.js";
 
-async function listContacts() {
-  const contact = await Contact.find();
+async function listContacts(owner) {
+  const contact = await Contact.find({ owner }, "-createdAt -updatedAt");
   return contact;
 }
 
-async function getContactById(contactId) {
-  const contact = await Contact.findById(contactId);
+async function getContactById(contactId, owner) {
+  const contact = await Contact.findOne({ _id: contactId, owner: owner });
   return contact || null;
 }
 
-async function removeContact(contactId) {
-  const contactToRemove = await Contact.findByIdAndDelete(contactId);
+async function removeContact(contactId, owner) {
+  const contactToRemove = await Contact.findByIdAndDelete({
+    _id: contactId,
+    owner: owner,
+  });
   return contactToRemove;
 }
 
-async function addContact(data) {
-  const newContacts = await Contact.create(data);
+async function addContact(data, owner) {
+  const newContacts = await Contact.create({ ...data, owner });
   return newContacts;
 }
 
-async function updateContactById(contactId, updateData) {
+async function updateContactById(contactId, updateData, owner) {
   const updatedContact = await Contact.findByIdAndUpdate(
-    contactId,
+    {
+      _id: contactId,
+      owner: owner,
+    },
     updateData,
     { new: true }
   );
   return updatedContact;
 }
-async function updateStatusContact(contactId, updateData) {
+async function updateStatusContact(contactId, updateData, owner) {
   const updatedContact = await Contact.findByIdAndUpdate(
-    contactId,
+    {
+      _id: contactId,
+      owner: owner,
+    },
     updateData,
     {
       new: true,

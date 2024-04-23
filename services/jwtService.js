@@ -10,12 +10,12 @@ export const signToken = (id) =>
   });
 
 export const checkToken = (token) => {
-  if (!token) throw HttpError(401, "Unauthorized");
+  if (!token) throw HttpError(401, "Not authorized");
 
   try {
     const { id } = jwt.verify(token, process.env.JWT_SECRET);
     return id;
   } catch (error) {
-    throw HttpError(401, "Unauthorized");
+    throw HttpError(401, "Not authorized");
   }
 };
