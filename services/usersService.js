@@ -59,3 +59,7 @@ export const saveTokenToDatabase = async (userId, token) => {
 
   return user;
 };
+
+export const findUserByToken = async (token) => {
+  return User.findOne({ token });
+};

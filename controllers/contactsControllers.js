@@ -6,10 +6,7 @@ import {
   updateContactById,
   updateStatusContact,
 } from "../services/contactsServices.js";
-import {
-  createContactSchema,
-  updateContactSchema,
-} from "../schemas/contactsSchemas.js";
+import { createContactSchema } from "../schemas/contactsSchemas.js";
 import { HttpError } from "../helpers/HttpError.js";
 
 import { catchAsync } from "../helpers/catchAsync.js";

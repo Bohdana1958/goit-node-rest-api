@@ -10,11 +10,6 @@ import {
   getUserByIdService,
 } from "../services/usersService.js";
 
-import jwt from "jsonwebtoken";
-import dotenv from "dotenv";
-
-dotenv.config();
-
 export const checkRegisterData = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
@@ -53,6 +48,7 @@ export const protect = catchAsync(async (req, res, next) => {
   const token =
     req.headers.authorization?.startsWith("Bearer") &&
     req.headers.authorization.split(" ")[1];
+
   const userId = checkToken(token);
 
   if (!userId) throw HttpError(401, "Not authorized");
@@ -61,6 +57,9 @@ export const protect = catchAsync(async (req, res, next) => {
 
   if (!currentUser) throw HttpError(401, "Not authorized");
 
+  if (!currentUser?.token || currentUser.token !== token) {
+    next(HttpError(401));
+  }
   req.user = currentUser;
 
   next();

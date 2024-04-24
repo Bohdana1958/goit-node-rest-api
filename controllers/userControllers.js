@@ -1,6 +1,7 @@
 import { catchAsync } from "../helpers/catchAsync.js";
 import {
   deleteToken,
+  findUserByToken,
   listUsers,
   loginUser,
   registerUser,
@@ -39,8 +40,13 @@ export const login = catchAsync(async (req, res) => {
   });
 });
 
-export const getCurrent = (req, res) => {
-  const { email, subscription } = req.user;
+export const getCurrent = async (req, res) => {
+  const { email, subscription, token } = req.user;
+
+  const user = await findUserByToken(token);
+
+  if (!user) throw HttpError(401, "Not authorized");
+
   res.status(200).json({
     email,
     subscription,
