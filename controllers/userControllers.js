@@ -4,6 +4,7 @@ import {
   listUsers,
   loginUser,
   registerUser,
+  saveTokenToDatabase,
 } from "../services/usersService.js";
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
@@ -24,10 +25,11 @@ export const register = catchAsync(async (req, res) => {
 
 export const login = catchAsync(async (req, res) => {
   const { user, token } = await loginUser({ ...req.body });
-  console.log("User:", user);
-  console.log("Token:", token);
 
   const { email, subscription } = user;
+
+  await saveTokenToDatabase(user._id, token);
+
   res.status(200).json({
     user: {
       email: email,
@@ -47,7 +49,7 @@ export const getCurrent = (req, res) => {
 
 export const logout = catchAsync(async (req, res) => {
   const { _id } = req.user;
-  await deleteToken(_id);
+  await deleteToken({ _id }, { token: null });
 
-  res.sendStatus(204);
+  res.status(204).send();
 });

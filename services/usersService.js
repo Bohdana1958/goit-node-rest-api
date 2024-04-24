@@ -49,7 +49,13 @@ export async function listUsers() {
 export const getUserByIdService = (id) => User.findById(id);
 
 export async function deleteToken(id) {
-  const result = await User.findByIdAndUpdate(id, { token: "" });
-  console.log(id);
-  return result;
+  const user = await User.findByIdAndUpdate(id, { token: null });
+
+  return user;
 }
+
+export const saveTokenToDatabase = async (userId, token) => {
+  const user = await User.findByIdAndUpdate(userId, { token });
+
+  return user;
+};

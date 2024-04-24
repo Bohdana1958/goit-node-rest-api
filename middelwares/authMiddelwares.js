@@ -10,6 +10,11 @@ import {
   getUserByIdService,
 } from "../services/usersService.js";
 
+import jwt from "jsonwebtoken";
+import dotenv from "dotenv";
+
+dotenv.config();
+
 export const checkRegisterData = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
 
