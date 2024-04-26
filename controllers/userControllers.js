@@ -15,11 +15,12 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 
 export const register = catchAsync(async (req, res) => {
   const { newUser } = await registerUser({ ...req.body });
-  const { email, subscription } = newUser;
+  const { email, subscription, avatarURL } = newUser;
   res.status(201).json({
     newUser: {
       email: email,
       subscription: subscription,
+      avatarURL: avatarURL,
     },
   });
 });

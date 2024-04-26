@@ -25,6 +25,8 @@ mongoose
 app.use(express.json());
 app.use(morgan("tiny"));
 app.use(cors());
+app.use(express.static("publicum"));
+app.use(express.static("public"));
 
 app.use("/api/contacts", contactsRouter);
 app.use("/api/users", authRouter);

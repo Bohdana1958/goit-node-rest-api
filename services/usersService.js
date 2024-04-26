@@ -2,6 +2,7 @@ import { User } from "../models/userModel.js";
 import { signToken } from "./jwtService.js";
 import { HttpError } from "../helpers/HttpError.js";
 import bcrypt from "bcrypt";
+// import gravatar from "gravatar";
 
 export const checkUserExistsService = (filter) => User.exists(filter);
 
@@ -16,6 +17,11 @@ export const registerUser = async (userData) => {
   const hashedPassword = await bcrypt.hash(password, 10);
 
   const newUser = await User.create({ email, password: hashedPassword });
+
+  // newUser.avatarURL = gravatar.url(email, { s: "200", r: "pg", d: "robohash" });
+
+  // await newUser.save();
+
   newUser.password = undefined;
 
   const token = signToken(newUser.id);
