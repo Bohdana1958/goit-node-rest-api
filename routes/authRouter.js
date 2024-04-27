@@ -11,9 +11,11 @@ import {
   login,
   logout,
   register,
+  updateAvatar,
 } from "../controllers/userControllers.js";
 import validateBody from "../helpers/validateBody.js";
 import { loginUserSchema, registerUserSchema } from "../schemas/usersSchema.js";
+import { multerUpload } from "../middelwares/userMiddelware.js";
 
 const router = Router();
 
@@ -31,5 +33,7 @@ router.post(
 router.post("/login", checkLoginData, validateBody(loginUserSchema), login);
 
 router.post("/logout", protect, logout);
+
+router.patch("/avatars", protect, multerUpload, updateAvatar);
 
 export default router;

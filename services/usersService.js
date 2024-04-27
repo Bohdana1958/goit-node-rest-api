@@ -69,3 +69,24 @@ export const saveTokenToDatabase = async (userId, token) => {
 export const findUserByToken = async (token) => {
   return User.findOne({ token });
 };
+
+// export const updateAvatarService = async (userData, user, file) => {
+//   if (file) {
+//     console.log("file:", file);
+//     user.avatar = file.path.replace("public", "");
+//   }
+
+//   Object.keys(userData).forEach((key) => {
+//     user[key] = userData[key];
+//   });
+//   return user.save();
+// };
+
+export const updateAvatarService = async (user, file) => {
+  const id = user.id;
+
+  user.avatarUrl = file.path.replace("public", "");
+
+  const currentUser = await User.findByIdAndUpdate(id, user, { new: true });
+  return await currentUser.save();
+};

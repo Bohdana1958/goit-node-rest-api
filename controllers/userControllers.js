@@ -60,3 +60,17 @@ export const logout = catchAsync(async (req, res) => {
 
   res.status(204).send();
 });
+
+export const updateAvatar = async (req, res, next) => {
+  try {
+    console.log("Received user:", req.user);
+    console.log("Received file:", req.file);
+    const user = await updateAvatarService(req.user, req.file);
+    return res.json({
+      user,
+    });
+  } catch (error) {
+    console.log(error);
+    next();
+  }
+};
