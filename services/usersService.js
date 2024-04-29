@@ -2,7 +2,7 @@ import { User } from "../models/userModel.js";
 import { signToken } from "./jwtService.js";
 import { HttpError } from "../helpers/HttpError.js";
 import bcrypt from "bcrypt";
-// import gravatar from "gravatar";
+import { ImageService } from "../services/imageService.js";
 
 export const checkUserExistsService = (filter) => User.exists(filter);
 
@@ -18,24 +18,25 @@ export const registerUser = async (userData) => {
 
   const newUser = await User.create({ email, password: hashedPassword });
 
-  // newUser.avatarURL = gravatar.url(email, { s: "200", r: "pg", d: "robohash" });
-
-  // await newUser.save();
-
   newUser.password = undefined;
 
   const token = signToken(newUser.id);
+  console.log("token:", token);
   return { newUser, token };
 };
 
 export const loginUser = async ({ email, password }) => {
+  console.log("email:", email);
+  console.log("pass:", password);
   const user = await User.findOne({ email }).select("+password");
+  console.log("USER:", user);
 
   if (!user) {
     throw HttpError(401, "Email or password is wrong");
   }
 
   const isPasswordValid = await user.checkUserPassword(password, user.password);
+  console.log("isPasswordValid:", isPasswordValid);
 
   if (!isPasswordValid) {
     throw HttpError(401, "Email or password is wrong");
@@ -43,6 +44,7 @@ export const loginUser = async ({ email, password }) => {
 
   user.password = undefined;
   const token = signToken(user.id);
+  console.log("TOKEN:", token);
 
   return { user, token };
 };
@@ -70,22 +72,19 @@ export const findUserByToken = async (token) => {
   return User.findOne({ token });
 };
 
-// export const updateAvatarService = async (userData, user, file) => {
-//   if (file) {
-//     console.log("file:", file);
-//     user.avatar = file.path.replace("public", "");
-//   }
-
-//   Object.keys(userData).forEach((key) => {
-//     user[key] = userData[key];
-//   });
-//   return user.save();
-// };
-
 export const updateAvatarService = async (user, file) => {
   const id = user.id;
 
-  user.avatarUrl = file.path.replace("public", "");
+  user.avatarUrl = await ImageService.saveImage(
+    file,
+    {
+      maxFileSize: 2,
+      width: 250,
+      height: 250,
+    },
+    "avatars",
+    user.id
+  );
 
   const currentUser = await User.findByIdAndUpdate(id, user, { new: true });
   return await currentUser.save();

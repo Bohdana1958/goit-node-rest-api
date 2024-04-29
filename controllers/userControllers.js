@@ -6,6 +6,7 @@ import {
   loginUser,
   registerUser,
   saveTokenToDatabase,
+  updateAvatarService,
 } from "../services/usersService.js";
 
 export const getAllUsers = catchAsync(async (req, res, next) => {
@@ -15,6 +16,7 @@ export const getAllUsers = catchAsync(async (req, res, next) => {
 
 export const register = catchAsync(async (req, res) => {
   const { newUser } = await registerUser({ ...req.body });
+
   const { email, subscription, avatarURL } = newUser;
   res.status(201).json({
     newUser: {
@@ -25,8 +27,34 @@ export const register = catchAsync(async (req, res) => {
   });
 });
 
+// export const login = catchAsync(async (req, res) => {
+//   try {
+//     const { user, token } = await loginUser({ ...req.body });
+//     console.log("Token :", token);
+//     console.log("user :", user);
+
+//     const { email, subscription } = user;
+
+//     await saveTokenToDatabase(user._id, token);
+//     console.log("TokenData :", token);
+
+//     res.status(200).json({
+//       user: {
+//         email: email,
+//         subscription: subscription,
+//       },
+//       token,
+//     });
+//   } catch (error) {
+//     console.error("An error occurred during login:", error);
+//     res.status(500).json({ message: "Internal server error" });
+//   }
+// });
+
 export const login = catchAsync(async (req, res) => {
   const { user, token } = await loginUser({ ...req.body });
+  console.log("Token :", token);
+  console.log("user :", user);
 
   const { email, subscription } = user;
 
@@ -61,16 +89,12 @@ export const logout = catchAsync(async (req, res) => {
   res.status(204).send();
 });
 
-export const updateAvatar = async (req, res, next) => {
-  try {
-    console.log("Received user:", req.user);
-    console.log("Received file:", req.file);
-    const user = await updateAvatarService(req.user, req.file);
-    return res.json({
-      user,
-    });
-  } catch (error) {
-    console.log(error);
-    next();
-  }
-};
+export const updateAvatar = catchAsync(async (req, res, next) => {
+  console.log("Received user:", req.user);
+  console.log("Received file:", req.file);
+  const user = await updateAvatarService(req.user, req.file);
+
+  res.status(200).json({
+    user,
+  });
+});
