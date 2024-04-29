@@ -1,4 +1,5 @@
 import { catchAsync } from "../helpers/catchAsync.js";
+import { ImageService } from "../services/imageService.js";
 import {
   deleteToken,
   findUserByToken,
@@ -26,30 +27,6 @@ export const register = catchAsync(async (req, res) => {
     },
   });
 });
-
-// export const login = catchAsync(async (req, res) => {
-//   try {
-//     const { user, token } = await loginUser({ ...req.body });
-//     console.log("Token :", token);
-//     console.log("user :", user);
-
-//     const { email, subscription } = user;
-
-//     await saveTokenToDatabase(user._id, token);
-//     console.log("TokenData :", token);
-
-//     res.status(200).json({
-//       user: {
-//         email: email,
-//         subscription: subscription,
-//       },
-//       token,
-//     });
-//   } catch (error) {
-//     console.error("An error occurred during login:", error);
-//     res.status(500).json({ message: "Internal server error" });
-//   }
-// });
 
 export const login = catchAsync(async (req, res) => {
   const { user, token } = await loginUser({ ...req.body });
@@ -90,8 +67,6 @@ export const logout = catchAsync(async (req, res) => {
 });
 
 export const updateAvatar = catchAsync(async (req, res, next) => {
-  console.log("Received user:", req.user);
-  console.log("Received file:", req.file);
   const user = await updateAvatarService(req.user, req.file);
 
   res.status(200).json({

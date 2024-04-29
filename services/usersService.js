@@ -21,22 +21,18 @@ export const registerUser = async (userData) => {
   newUser.password = undefined;
 
   const token = signToken(newUser.id);
-  console.log("token:", token);
+
   return { newUser, token };
 };
 
 export const loginUser = async ({ email, password }) => {
-  console.log("email:", email);
-  console.log("pass:", password);
-  const user = await User.findOne({ email }).select("+password");
-  console.log("USER:", user);
+  const user = await User.findOne({ email });
 
   if (!user) {
     throw HttpError(401, "Email or password is wrong");
   }
 
   const isPasswordValid = await user.checkUserPassword(password, user.password);
-  console.log("isPasswordValid:", isPasswordValid);
 
   if (!isPasswordValid) {
     throw HttpError(401, "Email or password is wrong");
@@ -44,7 +40,6 @@ export const loginUser = async ({ email, password }) => {
 
   user.password = undefined;
   const token = signToken(user.id);
-  console.log("TOKEN:", token);
 
   return { user, token };
 };
@@ -78,7 +73,6 @@ export const updateAvatarService = async (user, file) => {
   user.avatarUrl = await ImageService.saveImage(
     file,
     {
-      maxFileSize: 2,
       width: 250,
       height: 250,
     },
@@ -87,5 +81,31 @@ export const updateAvatarService = async (user, file) => {
   );
 
   const currentUser = await User.findByIdAndUpdate(id, user, { new: true });
+  console.log("Current:", currentUser);
+
   return await currentUser.save();
 };
+
+// export const updateAvatarService = async (user, file) => {
+//   // Зберегти нове зображення та отримати його URL
+//   const avatarUrl = await ImageService.saveImage(
+//     file,
+//     {
+//       maxFileSize: 5, // Приклад значення: 5 МБ
+//       width: 250,
+//       height: 250,
+//     },
+//     "avatars",
+//     user.id
+//   );
+
+//   // Оновити поле avatarUrl в об'єкті користувача
+//   user.avatarUrl = avatarUrl;
+
+//   // Зберегти оновленого користувача
+//   const updatedUser = await User.findByIdAndUpdate(user.id, user, {
+//     new: true,
+//   });
+
+//   return updatedUser;
+// };

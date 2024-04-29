@@ -28,32 +28,40 @@ const userSchema = new Schema(
   }
 );
 
+// userSchema.pre("save", async function (next) {
+//   if (this.isNew) {
+//     const emailHash = crypto.createHash("md5").update(this.email).digest("hex");
+
+//     this.avatarURL = `https://gravatar.com/avatar/${emailHash}.jpg?d=robohash`;
+//   }
+
+//   if (!this.isModified("password")) return next();
+// });
+
 userSchema.pre("save", async function (next) {
   if (this.isNew) {
     const emailHash = crypto.createHash("md5").update(this.email).digest("hex");
-
-    console.log("EmailHash:", emailHash);
-
     this.avatarURL = `https://gravatar.com/avatar/${emailHash}.jpg?d=robohash`;
+    if (!this.isModified("password")) return next();
   }
+});
 
-  if (!this.isModified("password")) return next();
-
-  const salt = await bcrypt.genSalt(10);
-  this.password = await bcrypt.hash(this.password, salt);
-
-  next();
+userSchema.post("save", async function () {
+  if (this.isModified("avatarURL")) {
+    const pathSegments = this.avatarURL.split("/");
+    const fileName = pathSegments[pathSegments.length - 1];
+    this.avatarURL = `/avatars/${this.id}/${fileName}`;
+    await this.save();
+  }
 });
 
 userSchema.post("save", handleError);
-userSchema.methods.checkUserPassword = (candidate, passwordHash) =>
-  bcrypt.compare(candidate, passwordHash);
+
+userSchema.methods.checkUserPassword = async function (
+  candidatePassword,
+  passwordHash
+) {
+  return await bcrypt.compare(candidatePassword, passwordHash);
+};
 
 export const User = model("user", userSchema);
-
-// export const signup = async (data) => {
-//   const hashPassword = await bcrypt.hash(data.password, 10);
-//   return User.create({ ...data, password: hashPassword });
-// };
-// export const validatePassword = (password, hashPassword) =>
-//   bcrypt.compare(password, hashPassword);
