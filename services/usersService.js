@@ -76,36 +76,10 @@ export const updateAvatarService = async (user, file) => {
       width: 250,
       height: 250,
     },
-    "avatars",
-    user.id
+    "avatars"
   );
 
   const currentUser = await User.findByIdAndUpdate(id, user, { new: true });
-  console.log("Current:", currentUser);
 
   return await currentUser.save();
 };
-
-// export const updateAvatarService = async (user, file) => {
-//   // Зберегти нове зображення та отримати його URL
-//   const avatarUrl = await ImageService.saveImage(
-//     file,
-//     {
-//       maxFileSize: 5, // Приклад значення: 5 МБ
-//       width: 250,
-//       height: 250,
-//     },
-//     "avatars",
-//     user.id
-//   );
-
-//   // Оновити поле avatarUrl в об'єкті користувача
-//   user.avatarUrl = avatarUrl;
-
-//   // Зберегти оновленого користувача
-//   const updatedUser = await User.findByIdAndUpdate(user.id, user, {
-//     new: true,
-//   });
-
-//   return updatedUser;
-// };

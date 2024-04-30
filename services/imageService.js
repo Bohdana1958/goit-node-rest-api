@@ -10,7 +10,6 @@ export class ImageService {
     const multerStorage = multer.memoryStorage();
 
     const multerFilter = (req, file, callback) => {
-      console.log("filter file:", file);
       if (file.mimetype.startsWith("image/")) {
         callback(null, true);
       } else {

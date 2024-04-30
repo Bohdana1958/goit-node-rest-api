@@ -30,8 +30,6 @@ export const register = catchAsync(async (req, res) => {
 
 export const login = catchAsync(async (req, res) => {
   const { user, token } = await loginUser({ ...req.body });
-  console.log("Token :", token);
-  console.log("user :", user);
 
   const { email, subscription } = user;
 
