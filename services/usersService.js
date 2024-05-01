@@ -70,7 +70,7 @@ export const findUserByToken = async (token) => {
 export const updateAvatarService = async (user, file) => {
   const id = user.id;
 
-  user.avatarUrl = await ImageService.saveImage(
+  user.avatarURL = await ImageService.saveImage(
     file,
     {
       width: 250,

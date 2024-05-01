@@ -65,9 +65,15 @@ export const logout = catchAsync(async (req, res) => {
 });
 
 export const updateAvatar = catchAsync(async (req, res, next) => {
+  if (!req.file) {
+    return res.status(400).json({ message: "File is required" });
+  }
   const user = await updateAvatarService(req.user, req.file);
 
   res.status(200).json({
-    user,
+    user: {
+      ...user.toJSON(),
+      avatarURL: user.avatarURL,
+    },
   });
 });
