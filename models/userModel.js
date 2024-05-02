@@ -7,26 +7,22 @@ const userSchema = new Schema(
   {
     password: {
       type: String,
-      required: [true, "Set password for user"],
+      required: [true, "Password is required"],
     },
     email: {
       type: String,
       required: [true, "Email is required"],
-      unique: true,
     },
     subscription: {
       type: String,
       enum: ["starter", "pro", "business"],
       default: "starter",
     },
-    token: String,
     avatarURL: String,
-  },
-  {
-    timestamps: true,
-    versionKey: false,
-  },
-  {
+    token: {
+      type: String,
+      default: null,
+    },
     verify: {
       type: Boolean,
       default: false,
@@ -35,8 +31,21 @@ const userSchema = new Schema(
       type: String,
       required: [true, "Verify token is required"],
     },
+  },
+  {
+    timestamps: true,
+    versionKey: false,
   }
 );
+
+userSchema.pre("validate", function (next) {
+  if (this.verify) {
+    this.constructor.schema.path("verificationToken").required(false);
+  } else {
+    this.constructor.schema.path("verificationToken").required(true);
+  }
+  next();
+});
 
 userSchema.pre("save", async function (next) {
   if (this.isNew) {

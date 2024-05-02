@@ -3,6 +3,8 @@ import { signToken } from "./jwtService.js";
 import { HttpError } from "../helpers/HttpError.js";
 import bcrypt from "bcrypt";
 import { ImageService } from "../services/imageService.js";
+import { v4 as uuidv4 } from "uuid";
+import { msg } from "../helpers/msg.js";
 
 export const checkUserExistsService = (filter) => User.exists(filter);
 
@@ -14,11 +16,20 @@ export const registerUser = async (userData) => {
     throw HttpError(409, "Email in use");
   }
 
+  const verificationToken = uuidv4();
+  userData.verificationToken = verificationToken;
+
   const hashedPassword = await bcrypt.hash(password, 10);
 
-  const newUser = await User.create({ email, password: hashedPassword });
+  const newUser = await User.create({
+    email,
+    password: hashedPassword,
+    verificationToken,
+  });
 
   newUser.password = undefined;
+
+  msg(newUser.id, newUser.verificationToken, email);
 
   const token = signToken(newUser.id);
 
@@ -30,6 +41,10 @@ export const loginUser = async ({ email, password }) => {
 
   if (!user) {
     throw HttpError(401, "Email or password is wrong");
+  }
+
+  if (!user.verify) {
+    throw HttpError(401, "Email is not verified");
   }
 
   const isPasswordValid = await user.checkUserPassword(password, user.password);

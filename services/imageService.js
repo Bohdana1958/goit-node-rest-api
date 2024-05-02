@@ -2,8 +2,6 @@ import multer from "multer";
 import path from "path";
 import { HttpError } from "../helpers/HttpError.js";
 import { v4 } from "uuid";
-// import * as fse from "fs-extra";
-
 import fse from "fs-extra";
 import jimp from "jimp";
 
@@ -43,14 +41,7 @@ export class ImageService {
     await avatar
       .cover(options?.width ?? 250, options?.height ?? 250)
       .quality(100)
-      .writeAsync(
-        path.join(process.cwd(), "public", ...pathSegments, fileName)
-      );
-
-    const avatarsDir = path.join(process.cwd(), "avatars");
-    const destinationFilePath = path.join(avatarsDir, fileName);
-    await fse.ensureDir(avatarsDir);
-    await fse.outputFile(destinationFilePath, file.buffer);
+      .writeAsync(path.join(process.cwd(), "public", "avatars", fileName));
 
     await fse.unlink(fullFilePath);
 
