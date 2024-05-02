@@ -12,6 +12,8 @@ import {
   logout,
   register,
   updateAvatar,
+  verificationToken,
+  verify,
 } from "../controllers/userControllers.js";
 import validateBody from "../helpers/validateBody.js";
 import { loginUserSchema, registerUserSchema } from "../schemas/usersSchema.js";
@@ -35,5 +37,9 @@ router.post("/login", checkLoginData, validateBody(loginUserSchema), login);
 router.post("/logout", protect, logout);
 
 router.patch("/avatars", protect, multerUpload, updateAvatar);
+
+router.get("/verify/:verificationToken", verificationToken);
+
+router.post("/verify", verify);
 
 export default router;
