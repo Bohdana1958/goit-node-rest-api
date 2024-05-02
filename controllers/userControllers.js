@@ -71,9 +71,6 @@ export const updateAvatar = catchAsync(async (req, res, next) => {
   const user = await updateAvatarService(req.user, req.file);
 
   res.status(200).json({
-    user: {
-      ...user.toJSON(),
-      avatarURL: user.avatarURL,
-    },
+    avatarURL: user.avatarURL,
   });
 });
