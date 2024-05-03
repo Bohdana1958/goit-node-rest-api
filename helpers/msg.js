@@ -27,6 +27,6 @@ export const msg = (name, verificationToken, email) => {
       console.log("Email sent");
     })
     .catch((error) => {
-      next(error);
+      console.error("Error sending email:", error);
     });
 };
